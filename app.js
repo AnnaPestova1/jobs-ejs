@@ -78,8 +78,6 @@ app.use((err, req, res, next) => {
   console.log(err);
 });
 
-app.use(require("connect-flash")());
-
 const port = process.env.PORT || 3000;
 
 const start = async () => {
