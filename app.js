@@ -13,7 +13,6 @@ const url = process.env.MONGO_URI;
 
 const secretWordRouter = require("./routes/secretWord");
 const auth = require("./middleware/auth");
-
 const store = new MongoDBStore({
   // may throw an error, which won't be caught
   uri: url,
@@ -37,7 +36,8 @@ if (app.get("env") === "production") {
 }
 
 app.use(session(sessionParms));
-
+const csrf = require("./middleware/csrf");
+app.use(csrf);
 const passport = require("passport");
 const passportInit = require("./passport/passportInit");
 
