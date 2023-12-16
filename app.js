@@ -11,6 +11,9 @@ const session = require("express-session");
 const MongoDBStore = require("connect-mongodb-session")(session);
 const url = process.env.MONGO_URI;
 
+const secretWordRouter = require("./routes/secretWord");
+const auth = require("./middleware/auth");
+
 const store = new MongoDBStore({
   // may throw an error, which won't be caught
   uri: url,
@@ -49,27 +52,7 @@ app.get("/", (req, res) => {
 });
 app.use("/sessions", require("./routes/sessionRoutes"));
 
-// secret word handling
-// let secretWord = "syzygy";
-
-app.get("/secretWord", (req, res) => {
-  if (!req.session.secretWord) {
-    req.session.secretWord = "syzygy";
-  }
-  res.locals.info = req.flash("info");
-  res.locals.errors = req.flash("error");
-  res.render("secretWord", { secretWord: req.session.secretWord });
-});
-// app.get("/secretWord", (req, res) => {
-//   if (!req.session.secretWord) {
-//     req.session.secretWord = "syzygy";
-//   }
-//   res.render("secretWord", { secretWord: req.session.secretWord });
-// });
-// app.post("/secretWord", (req, res) => {
-//   req.session.secretWord = req.body.secretWord;
-//   res.redirect("/secretWord");
-// });
+app.use("/secretWord", auth, secretWordRouter);
 
 app.post("/secretWord", (req, res) => {
   if (req.body.secretWord.toUpperCase()[0] == "P") {
@@ -105,3 +88,24 @@ const start = async () => {
 };
 
 start();
+
+// secret word handling
+// let secretWord = "syzygy";
+// app.get("/secretWord", (req, res) => {
+//   if (!req.session.secretWord) {
+//     req.session.secretWord = "syzygy";
+//   }
+//   res.locals.info = req.flash("info");
+//   res.locals.errors = req.flash("error");
+//   res.render("secretWord", { secretWord: req.session.secretWord });
+// });
+// app.get("/secretWord", (req, res) => {
+//   if (!req.session.secretWord) {
+//     req.session.secretWord = "syzygy";
+//   }
+//   res.render("secretWord", { secretWord: req.session.secretWord });
+// });
+// app.post("/secretWord", (req, res) => {
+//   req.session.secretWord = req.body.secretWord;
+//   res.redirect("/secretWord");
+// });
