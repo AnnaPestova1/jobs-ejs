@@ -12,7 +12,10 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const url = process.env.MONGO_URI;
 
 const secretWordRouter = require("./routes/secretWord");
+
 const auth = require("./middleware/auth");
+const dataRouter = require("./routes/data");
+
 const store = new MongoDBStore({
   // may throw an error, which won't be caught
   uri: url,
@@ -30,6 +33,7 @@ const sessionParms = {
   cookie: { secure: false, sameSite: "strict" }
 };
 
+app.use(express.json());
 if (app.get("env") === "production") {
   app.set("trust proxy", 1); // trust first proxy
   sessionParms.cookie.secure = true; // serve secure cookies
@@ -47,11 +51,13 @@ app.use(passport.session());
 
 app.use(require("connect-flash")());
 app.use(require("./middleware/storeLocals"));
+
 app.get("/", (req, res) => {
   res.render("index");
 });
 app.use("/sessions", require("./routes/sessionRoutes"));
 
+app.use("/data", auth, dataRouter);
 app.use("/secretWord", auth, secretWordRouter);
 
 app.post("/secretWord", (req, res) => {
@@ -78,7 +84,7 @@ const port = process.env.PORT || 3000;
 
 const start = async () => {
   try {
-    await require("./db/connect")(process.env.MONGO_URI);
+    await require("./db/connect")(url);
     app.listen(port, () =>
       console.log(`Server is listening on port ${port}...`)
     );
