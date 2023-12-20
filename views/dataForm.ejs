@@ -1,0 +1,36 @@
+<%- include("partials/head.ejs") %> <%- include("partials/header.ejs") %>
+<%console.log("data", data)%>
+<h2>Sky Events List</h2>
+<div id="dataForm">
+  <form>
+    <div>
+      <label for="event">Event:</label>
+      <select id="event">
+        <option value="comet">comet</option>
+        <option value="asteroid">asteroid</option>
+        <option value="meteor_shower">meteor shower</option>
+        <option value="solar_eclipse">Solar Eclipse</option>
+        <option value="lunar_eclipse">Lunar Eclipse</option>
+      </select>
+    </div>
+    <div>
+      <label for="name">Name:</label>
+      <input type="text" id="name" />
+    </div>
+    <div>
+      <label for="date">Date:</label>
+      <input type="date" id="date" />
+    </div>
+    <div>
+      <label for="description">Description:</label>
+      <textarea id="description"></textarea>
+    </div>
+    <button type="button" id="adding-data">add</button>
+    <form method="POST" action="/data/delete/:id" style="display: inline">
+      <button type="button">delete</button>
+      <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+    </form>
+  </form>
+</div>
+
+<%- include("partials/footer.ejs") %>
