@@ -10,9 +10,11 @@
         <th colspan="2"></th>
       </tr>
       
-      <% if (data && data.length) { 
+      <% 
+       let dataId = ""
+      if (data && data.length) { 
         data.forEach((d) => { 
-          let dataId = d._id.toString()
+          dataId = d._id.toString()
           console.log("singleData", dataId) 
         let showDate = "" 
         if (d.date !== null) {
@@ -31,23 +33,23 @@
             </td>
             <%}%>
             <td>
-                <a href="/data/new">
-                <button type="button">create new data</button>
-                </a>
-            </td>
-            <td>
                 <a href="/data/edit/<%= dataId %>">
                 <button type="button">edit</button>
                 </a>
             </td>
             <td>
-                <form method="POST" action="/data/delete/<%= data.id %>" style="display: inline">
-                <button type="button">delete</button>
+                <form method="POST" action="/data/delete/<%= dataId %>" style="display: inline">
                 <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+                <button type="submit">delete</button>
                 </form>
             </td>
           </tr>
         <% }) %>
       <% } %>
+       <td>
+          <a href="/data/new">
+          <button type="button">create new data</button>
+          </a>
+        </td>
     </table>
     <%- include("partials/footer.ejs") %>

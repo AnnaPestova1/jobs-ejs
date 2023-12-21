@@ -1,14 +1,17 @@
-<%- include("partials/head.ejs") %> <%- include("partials/header.ejs") %>
+<%- include("partials/head.ejs") %>
+<%- include("partials/header.ejs") %>
 <%console.log("data", data)%>
 <%
 let eventValue = ""
 let nameValue = ""
 let dateValue = ""
 let descriptionValue = ""
+let id = ""
 if (data !== null) {
+  id = data._id.toString()
   eventValue = data.event
   nameValue = data.name
-  descriptionValue - data.description
+  descriptionValue = data.description
    if (data.date !== null) {
     let day = data.date.getUTCDate()
     let month = data.date.getUTCMonth()
@@ -32,16 +35,30 @@ if (data !== null) {
   {value: "solar_eclipse", displayName: "solar eclipse"},
   {value: "lunar_eclipse", displayName: "lunar eclipse"}
   ]
+  console.log("id", id, typeof(id))
   console.log("eventValue", eventValue)
   console.log("nameValue", nameValue)
   console.log("dateValue", dateValue, typeof(dateValue))
+  console.log("descriptionValue", descriptionValue)
+
+  let formAction = ""
+  if (data === null){
+    formAction = "/data"
+  } 
+  if (data) {
+     formAction = `/data/update/${id}`
+  }
+
+  console.log("formAction", formAction)
+
 %>
 <h2>Sky Events List</h2>
 <div id="dataForm">
-  <form>
+  <form action="<%= formAction %>" method="POST">
+    <input type="hidden" name="_csrf" value="<%= _csrf %>" />
     <div>
       <label for="event">Event:</label>
-      <select id="event" value="<%= eventValue %>">
+      <select id="event" name="event" value="<%= eventValue %>">
         <option value="">Choose an option</option>
         <%selectOptions.map((o)=>{%>
           <option value="<%=o.value%>" <%= eventValue === o.value && "selected" %> ><%=o.displayName%></option>
@@ -50,27 +67,29 @@ if (data !== null) {
     </div>
     <div>
       <label for="name" >Name:</label>
-      <input type="text" id="name"  value="<%= nameValue %>"/>
+      <input type="text" id="name" name="name" value="<%= nameValue %>"/>
     </div>
     <div>
       <label for="date" >Date:</label>
-      <input type="date" id="date" value="<%= dateValue %>" />
+      <input type="date" id="date" name="date" value="<%= dateValue %>" />
     </div>
     <div>
       <label for="description" >Description:</label>
-      <textarea id="description" value="<%= descriptionValue %>"></textarea>
+      <textarea id="description" name="description" ><%= descriptionValue %></textarea>
     </div>
     <% if (data === null) { %>
-    <button type="button">add</button>
+    <button type="submit">add</button>
     <%}%>
      <% if (data !== null) { %>
-    <button type="button">edit</button>
+    <button type="submit">edit</button>
     <%}%>
-    <form method="POST" action="/data/delete/:id" style="display: inline">
-      <button type="button">delete</button>
+  </form>
+   <% if (data !== null) { %>
+     <form method="POST" action="/data/delete/<%= id %>" style="display: inline">
+      <button type="submit">delete</button>
       <input type="hidden" name="_csrf" value="<%= _csrf %>" />
     </form>
-  </form>
+       <%}%>
 </div>
 
 <%- include("partials/footer.ejs") %>
