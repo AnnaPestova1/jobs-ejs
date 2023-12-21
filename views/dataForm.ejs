@@ -1,31 +1,71 @@
 <%- include("partials/head.ejs") %> <%- include("partials/header.ejs") %>
 <%console.log("data", data)%>
+<%
+let eventValue = ""
+let nameValue = ""
+let dateValue = ""
+let descriptionValue = ""
+if (data !== null) {
+  eventValue = data.event
+  nameValue = data.name
+  descriptionValue - data.description
+   if (data.date !== null) {
+    let day = data.date.getUTCDate()
+    let month = data.date.getUTCMonth()
+    let year = data.date.getUTCFullYear()
+ 
+    if(day < 10) {
+      day = day.toString().padStart(2, '0')
+    }
+     if(month < 10) {
+      month = month.toString().padStart(2, '0')
+    }
+      dateValue = `${year}-${month}-${day}` 
+      console.log(day, month, year)
+    }
+  }
+
+  const selectOptions = [
+  {value: "comet", displayName: "comet"},
+  {value: "asteroid", displayName: "asteroid"},
+  {value: "meteor_shower", displayName: "meteor shower"},
+  {value: "solar_eclipse", displayName: "solar eclipse"},
+  {value: "lunar_eclipse", displayName: "lunar eclipse"}
+  ]
+  console.log("eventValue", eventValue)
+  console.log("nameValue", nameValue)
+  console.log("dateValue", dateValue, typeof(dateValue))
+%>
 <h2>Sky Events List</h2>
 <div id="dataForm">
   <form>
     <div>
       <label for="event">Event:</label>
-      <select id="event">
-        <option value="comet">comet</option>
-        <option value="asteroid">asteroid</option>
-        <option value="meteor_shower">meteor shower</option>
-        <option value="solar_eclipse">Solar Eclipse</option>
-        <option value="lunar_eclipse">Lunar Eclipse</option>
+      <select id="event" value="<%= eventValue %>">
+        <option value="">Choose an option</option>
+        <%selectOptions.map((o)=>{%>
+          <option value="<%=o.value%>" <%= eventValue === o.value && "selected" %> ><%=o.displayName%></option>
+        <%})%>
       </select>
     </div>
     <div>
-      <label for="name">Name:</label>
-      <input type="text" id="name" />
+      <label for="name" >Name:</label>
+      <input type="text" id="name"  value="<%= nameValue %>"/>
     </div>
     <div>
-      <label for="date">Date:</label>
-      <input type="date" id="date" />
+      <label for="date" >Date:</label>
+      <input type="date" id="date" value="<%= dateValue %>" />
     </div>
     <div>
-      <label for="description">Description:</label>
-      <textarea id="description"></textarea>
+      <label for="description" >Description:</label>
+      <textarea id="description" value="<%= descriptionValue %>"></textarea>
     </div>
-    <button type="button" id="adding-data">add</button>
+    <% if (data === null) { %>
+    <button type="button">add</button>
+    <%}%>
+     <% if (data !== null) { %>
+    <button type="button">edit</button>
+    <%}%>
     <form method="POST" action="/data/delete/:id" style="display: inline">
       <button type="button">delete</button>
       <input type="hidden" name="_csrf" value="<%= _csrf %>" />

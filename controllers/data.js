@@ -56,7 +56,20 @@ const createData = async (req, res) => {
 };
 
 const editData = async (req, res) => {
-  res.send("editData data");
+  const userId = req.user._id.toString();
+  const dataId = req.params.id;
+
+  console.log(userId, dataId);
+
+  const data = await Data.findOne({
+    _id: dataId,
+    createdBy: userId
+  });
+  if (!data) {
+    throw new NotFoundError(`No job with id ${req.params.id}`);
+  }
+  console.log("data", data);
+  res.render("dataForm", { data });
 };
 
 const updateData = async (req, res) => {
