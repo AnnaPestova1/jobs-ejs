@@ -24,7 +24,6 @@ if (data !== null) {
       month = month.toString().padStart(2, '0')
     }
       dateValue = `${year}-${month}-${day}` 
-      console.log(day, month, year)
     }
   }
 
@@ -35,11 +34,6 @@ if (data !== null) {
   {value: "solar_eclipse", displayName: "solar eclipse"},
   {value: "lunar_eclipse", displayName: "lunar eclipse"}
   ]
-  console.log("id", id, typeof(id))
-  console.log("eventValue", eventValue)
-  console.log("nameValue", nameValue)
-  console.log("dateValue", dateValue, typeof(dateValue))
-  console.log("descriptionValue", descriptionValue)
 
   let formAction = ""
   if (data === null){
@@ -48,8 +42,6 @@ if (data !== null) {
   if (data) {
      formAction = `/data/update/${id}`
   }
-
-  console.log("formAction", formAction)
 
 %>
 <h2>Sky Events List</h2>

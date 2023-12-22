@@ -1,4 +1,4 @@
-   <%- include("partials/head.ejs") %> 
+<%- include("partials/head.ejs") %> 
 <%- include("partials/header.ejs") %>
    <h2>Sky Events List</h2>
     <table id="data-table">
@@ -15,7 +15,6 @@
       if (data && data.length) { 
         data.forEach((d) => { 
           dataId = d._id.toString()
-          console.log("singleData", dataId) 
         let showDate = "" 
         if (d.date !== null) {
         showDate = d.date.toDateString().slice(4,15)

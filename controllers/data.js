@@ -1,10 +1,7 @@
 const Data = require("../models/Data");
-// const { StatusCodes } = require("http-status-codes");
-// const { BadRequestError, NotFoundError } = require("../errors");
 
 const getAllData = async (req, res) => {
   const data = await Data.find({ createdBy: req.user.id }).sort("createdAt");
-  console.log(data);
   res.render("data", { data });
 };
 
@@ -15,49 +12,54 @@ const newData = async (req, res) => {
 const getData = async (req, res) => {
   const userId = req.user._id.toString();
   const dataId = req.params.id;
-  console.log(userId, dataId);
   const data = await Data.findOne({
     _id: dataId,
     createdBy: userId
   });
   if (!data) {
-    throw new Error(`No data with id ${req.params.id}`);
+    req.flash("error", `No data with id ${req.params.id}`);
+    res.redirect("/data"); 
   }
-  console.log("data", data);
   res.render("data", { data: [data] });
 };
 
 const createData = async (req, res) => {
+    const {
+      body: { event, name }
+    } = req;
     req.body.createdBy = req.user._id;
-    const data = await Data.create(req.body);
-    res.status(200).json({ data });
+   if (event === "" || name === "") {
+    req.flash("error", "Event or Name fields cannot be empty.");
+     res.redirect("/data/new"); 
+   }
+    await Data.create(req.body);
+    res.redirect("/data"); 
 };
 
 const editData = async (req, res) => {
   const userId = req.user._id.toString();
   const dataId = req.params.id;
 
-  console.log(userId, dataId);
-
   const data = await Data.findOne({
     _id: dataId,
     createdBy: userId
   });
   if (!data) {
-    throw new Error(`No data with id ${req.params.id}`);
+     req.flash("error", `No data with id ${req.params.id}`);
+     res.redirect("/data"); 
   }
-  console.log("data", data);
   res.render("dataForm", { data });
 };
 
 const updateData = async (req, res) => {
     const {
-      body: { event, name, date, description },
+      body: { event, name },
       user: { _id: userId },
       params: { id: dataId }
     } = req;
     if (event === "" || name === "") {
-      throw new Error("Event or Name fields cannot be empty");
+       req.flash("error", "Event or Name fields cannot be empty");
+       res.redirect("/data"); 
     }
     const data = await Data.findByIdAndUpdate(
       {
@@ -65,17 +67,16 @@ const updateData = async (req, res) => {
         createdBy: userId
       },
       req.body,
-      // { new: true, runValidators: true }
+      { new: true, runValidators: true }
     );
     if (!data) {
-      throw new Error(`No data with id ${dataId}`);
+      req.flash("error", `No data with id ${dataId}`);
+      res.redirect("/data"); 
     }
-    res.status(200).json({ data });
+    res.redirect("/data") 
 };
 
 const deleteData = async (req, res) => {
-  // res.send("delete data");
-  console.log("from req", req.user, req.params)
     const {
       user: { _id: userId },
       params: { id: dataId }
@@ -86,9 +87,10 @@ const deleteData = async (req, res) => {
     });
     console.log(data)
     if (!data) {
-      throw new Error(`No data with id ${dataId}`);
+         req.flash("error", `No data with id ${dataId}`);
+         res.redirect("/"); 
     }
-    res.status(200).json({ msg: "The entry was deleted." });
+     res.redirect("/data"); 
 };
 
 module.exports = {

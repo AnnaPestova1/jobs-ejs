@@ -6,17 +6,20 @@
      <input type="hidden" name="_csrf" value="<%= _csrf %>">
    <button>Logoff</button>
    </form>
+   <a href="/data">
+      <button type="button">To sky events</button>
+    </a>
 <% } %>
 <% if (errors) {
     errors.forEach((err) => { %>
-      <div>
+      <div style="color:red">
         Error: <%= err %>
       </div>
     <% })
   } %>
   <% if (info) {
     info.forEach((msg) => { %>
-      <div>
+      <div style="color:green">
         Info: <%= msg %>
       </div>
     <% })
