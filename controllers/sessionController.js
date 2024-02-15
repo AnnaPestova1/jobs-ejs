@@ -30,8 +30,8 @@ const registerShow = (req, res) => {
 const registerDo = async (req, res, next) => {
   let validation_errors = false;
   if (req.body.password != req.body.password1) {
-    req.flash("error", "The passwords entered do not match.");
-    validation_errors = true;
+    // req.flash("error", "The passwords entered do not match.");
+    return res.render("register", { errors: req.flash("error") });
   }
 
   try {
@@ -45,7 +45,7 @@ const registerDo = async (req, res, next) => {
     } else {
       return next(e);
     }
-    validation_errors = true;
+    return res.render("register", { errors: req.flash("error") });
   }
 
   // if there are no validation errors then redirect to main paige
