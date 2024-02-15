@@ -17,7 +17,9 @@
           dataId = d._id.toString()
         let showDate = "" 
         if (d.date !== null) {
-        showDate = d.date.toDateString().slice(4,15)
+       showDate = new Date(d.date).toLocaleDateString(undefined, {
+          timeZone: "UTC"
+        }).slice(4,15)
         }%>
           <tr>
             <td><%= d.event %></td>
