@@ -1,5 +1,10 @@
 const express = require("express");
 require("express-async-errors");
+
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const rateLimiter = require("express-rate-limit");
+
 const app = express();
 
 app.set("view engine", "ejs");
@@ -12,7 +17,11 @@ const MongoDBStore = require("connect-mongodb-session")(session);
 const url = process.env.MONGO_URI;
 
 const secretWordRouter = require("./routes/secretWord");
+
 const auth = require("./middleware/auth");
+const dataRouter = require("./routes/data");
+const parseValidationErrors = require("./utils/parseValidationErrs")
+
 const store = new MongoDBStore({
   // may throw an error, which won't be caught
   uri: url,
@@ -30,10 +39,20 @@ const sessionParms = {
   cookie: { secure: false, sameSite: "strict" }
 };
 
+app.use(express.json());
 if (app.get("env") === "production") {
   app.set("trust proxy", 1); // trust first proxy
   sessionParms.cookie.secure = true; // serve secure cookies
 }
+
+app.use(
+  rateLimiter({
+    windowMs: 15 * 60 * 1000, //15 min
+    max: 100 //limit each IP to 100 requests per windowMs
+  })
+);
+app.use(helmet());
+app.use(xss());
 
 app.use(session(sessionParms));
 const csrf = require("./middleware/csrf");
@@ -47,11 +66,13 @@ app.use(passport.session());
 
 app.use(require("connect-flash")());
 app.use(require("./middleware/storeLocals"));
+
 app.get("/", (req, res) => {
   res.render("index");
 });
 app.use("/sessions", require("./routes/sessionRoutes"));
 
+app.use("/data", auth, dataRouter);
 app.use("/secretWord", auth, secretWordRouter);
 
 app.post("/secretWord", (req, res) => {
@@ -74,11 +95,12 @@ app.use((err, req, res, next) => {
   console.log(err);
 });
 
+app.use(parseValidationErrors);
 const port = process.env.PORT || 3000;
 
 const start = async () => {
   try {
-    await require("./db/connect")(process.env.MONGO_URI);
+    await require("./db/connect")(url);
     app.listen(port, () =>
       console.log(`Server is listening on port ${port}...`)
     );

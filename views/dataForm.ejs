@@ -1,0 +1,87 @@
+<%- include("partials/head.ejs") %>
+<%- include("partials/header.ejs") %>
+<%console.log("data", data)%>
+<%
+let eventValue = ""
+let nameValue = ""
+let dateValue = ""
+let descriptionValue = ""
+let id = ""
+if (data !== null) {
+  id = data._id.toString()
+  eventValue = data.event
+  nameValue = data.name
+  descriptionValue = data.description
+   if (data.date !== null) {
+    let day = data.date.getUTCDate()
+    let month = data.date.getUTCMonth()
+    let year = data.date.getUTCFullYear()
+ 
+    if(day < 10) {
+      day = day.toString().padStart(2, '0')
+    }
+     if(month < 10) {
+      month = month.toString().padStart(2, '0')
+    }
+      dateValue = `${year}-${month}-${day}` 
+    }
+  }
+
+  const selectOptions = [
+  {value: "comet", displayName: "comet"},
+  {value: "asteroid", displayName: "asteroid"},
+  {value: "meteor_shower", displayName: "meteor shower"},
+  {value: "solar_eclipse", displayName: "solar eclipse"},
+  {value: "lunar_eclipse", displayName: "lunar eclipse"}
+  ]
+
+  let formAction = ""
+  if (data === null){
+    formAction = "/data"
+  } 
+  if (data) {
+     formAction = `/data/update/${id}`
+  }
+
+%>
+<h2>Sky Events List</h2>
+<div id="dataForm">
+  <form action="<%= formAction %>" method="POST">
+    <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+    <div>
+      <label for="event">Event:</label>
+      <select id="event" name="event" value="<%= eventValue %>">
+        <option value="">Choose an option</option>
+        <%selectOptions.map((o)=>{%>
+          <option value="<%=o.value%>" <%= eventValue === o.value && "selected" %> ><%=o.displayName%></option>
+        <%})%>
+      </select>
+    </div>
+    <div>
+      <label for="name" >Name:</label>
+      <input type="text" id="name" name="name" value="<%= nameValue %>"/>
+    </div>
+    <div>
+      <label for="date" >Date:</label>
+      <input type="date" id="date" name="date" value="<%= dateValue %>" />
+    </div>
+    <div>
+      <label for="description" >Description:</label>
+      <textarea id="description" name="description" ><%= descriptionValue %></textarea>
+    </div>
+    <% if (data === null) { %>
+    <button type="submit">add</button>
+    <%}%>
+     <% if (data !== null) { %>
+    <button type="submit">edit</button>
+    <%}%>
+  </form>
+   <% if (data !== null) { %>
+     <form method="POST" action="/data/delete/<%= id %>" style="display: inline">
+      <button type="submit">delete</button>
+      <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+    </form>
+       <%}%>
+</div>
+
+<%- include("partials/footer.ejs") %>

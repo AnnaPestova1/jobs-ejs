@@ -1,0 +1,56 @@
+<%- include("partials/head.ejs") %> 
+<%- include("partials/header.ejs") %>
+   <h2>Sky Events List</h2>
+    <table id="data-table">
+      <tr id="data-table-header">
+        <th>Event</th>
+        <th>Name</th>
+        <th>When</th>
+        <th>Description</th>
+        <th colspan="2"></th>
+      </tr>
+      
+      <% 
+       let dataId = ""
+      if (data && data.length) { 
+        data.forEach((d) => { 
+          dataId = d._id.toString()
+        let showDate = "" 
+        if (d.date !== null) {
+       showDate = new Date(d.date).toLocaleDateString(undefined, {
+          timeZone: "UTC"
+        }).slice(4,15)
+        }%>
+          <tr>
+            <td><%= d.event %></td>
+            <td><%= d.name %></td>
+             <td><%= showDate %></td>
+            <td><%= d.description %></td>
+            <% if (data.length > 1) {%>
+              <td>
+                <a href="/data/<%= dataId %>">
+                <button type="button">show this data</button>
+                </a>
+            </td>
+            <%}%>
+            <td>
+                <a href="/data/edit/<%= dataId %>">
+                <button type="button">edit</button>
+                </a>
+            </td>
+            <td>
+                <form method="POST" action="/data/delete/<%= dataId %>" style="display: inline">
+                <input type="hidden" name="_csrf" value="<%= _csrf %>" />
+                <button type="submit">delete</button>
+                </form>
+            </td>
+          </tr>
+        <% }) %>
+      <% } %>
+       <td>
+          <a href="/data/new">
+          <button type="button">create new data</button>
+          </a>
+        </td>
+    </table>
+    <%- include("partials/footer.ejs") %>
